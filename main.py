@@ -1,4 +1,5 @@
 from idlelib.help_about import AboutDialog
+from sqlite3 import connect
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QAction, QIcon
@@ -7,6 +8,14 @@ from PyQt6.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QGridLay
     QMessageBox
 import sys
 import sqlite3
+
+class DatabaseConnection:
+    def __init__(self, database_file="database.db"):
+        self.database_file = database_file
+
+    def connect(self):
+        connection = sqlite3.connect(self.database_file)
+        return connection
 
 
 class MainWindow(QMainWindow):
@@ -70,7 +79,7 @@ class MainWindow(QMainWindow):
 
 
     def load_data(self):
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection.connect()
         result = connection.execute("SELECT * FROM students")
         self.table.setRowCount(0)
         for row_num, row_data in enumerate(result):
@@ -168,7 +177,7 @@ class SearchDialog(QDialog):
 
     def search(self):
         name = self.stu_name.text()
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection.connect()
         cursor = connection.cursor()
         result = cursor.execute("SELECT * FROM students WHERE name=?",(name,))
         row = list(result)
@@ -220,7 +229,7 @@ class EditDialog(QDialog):
         self.setLayout(layout)
 
     def update_student(self):
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection.connect()
         cursor = connection.cursor()
         cursor.execute("UPDATE students SET name = ?, course = ?, mobile = ? WHERE id = ?",
                        (self.stu_name.text(),
@@ -258,7 +267,7 @@ class DeleteDialog(QDialog):
         index = sms.table.currentRow()
         stu_id = sms.table.item(index,0).text()
 
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection.connect()
         cursor = connection.cursor()
         cursor.execute("DELETE from students Where id = ?", (stu_id,))
         connection.commit()
