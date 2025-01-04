@@ -122,8 +122,8 @@ class SearchDialog(QDialog):
         layout.addWidget(self.stu_name)
 
         # Create submit button
-        btn = QPushButton("Register")
-        btn.clicked.connect(self.add_student)
+        btn = QPushButton("Search")
+        btn.clicked.connect(self.search)
         layout.addWidget(btn)
 
         self.setLayout(layout)
